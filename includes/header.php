@@ -50,13 +50,13 @@
             <div class="row ">
                 <div class="col-md-12">
                     <div class="navbar-collapse collapse ">
-                        <ul id="menu-top" class="nav navbar-nav">                        
+                        <ul id="menu-top" class="nav navbar-nav">                  
                           
                             <li><a href="../public/index.php">Home</a></li>
                             <li><a href="index.php#ulogin">Member Login</a></li>
                             <li><a href="signup.php">Member Registration</a></li>
                          
-                            <li><a href="../library_mgt_system/adminPanel/login.php">Admin Login</a></li>
+                            <li><a href="../mgt_system/adminPanel/login.php">Admin Login</a></li>
 
                         </ul>
                     </div>
