@@ -1,0 +1,49 @@
+Admin :-
+url:- http://192.168.1.10/library_mgt_system/mgt_system/admin
+Username: admin@library.com
+Password: Admin@123#$
+
+user:- 
+url:- http://192.168.1.10/library_mgt_system/mgt_system/
+username: devcoder4822@gmail.com
+password: 123456
+********************************************************************
+Functionality Requirement::
+-Book Mgt..
+-- Available Book Listing.
+--- edit/delete Book.
+--- Add New book in Library.
+--- Assign category.
+
+- Book Category
+-- Add/Edit/Delete
+
+-Member::
+-- Request issue book.
+--- List of issued books.
+--- Renew issued book.
+-- Lost book.
+--- setup fine on lost book. (fine can editable)
+- Request New Book in Library
+
+- Donate Book By Student
+- Collect Donation for Book
+- Library Suggestion box
+**********************************************************************************************************************
+**********************************************************************************************************************
+
+Issues::
+- add one more field under catgory listing (Available books) https://prnt.sc/APWWlgYxAwLr. [Done]
+- Memeber:: when request book to issue member can also select dates (start, Return)[Done]
+- admin and member both can check history of issued book.[Done]
+- Renew functionality pending..[Pending
+-- https://prnt.sc/uRjrllwL6Gny
+-- https://prnt.sc/CGMLhZQSKPvn
+- fine per day if due date is exceeded. [in-progress]
+- Donate Book [Pending]
+- Donation for Book [Pending]
+- Suggestion box [Pending]
+
+
+
+

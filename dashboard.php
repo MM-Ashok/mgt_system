@@ -1,107 +1,92 @@
 <?php
 session_start();
-error_reporting(0);
-include('includes/config.php');
-if(strlen($_SESSION['login'])==0)
-  { 
-header('location:index.php');
+$name = $_SESSION['user_name'];
+$id = $_SESSION['id'];
+include 'connection.php';
+if (empty($name)) {
+  header("Location: index.php");
 }
-else{?>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title> Library Management System | User Dash Board</title>
-    <!-- BOOTSTRAP CORE STYLE  -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FONT AWESOME STYLE  -->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- CUSTOM STYLE  -->
-    <link href="assets/css/style.css" rel="stylesheet" />
-    <!-- GOOGLE FONT -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 
-</head>
-<body>
-      <!------MENU SECTION START-->
-<?php include('includes/header.php');?>
-<!-- MENU SECTION END-->
-    <div class="content-wrapper">
-         <div class="container">
-        <div class="row pad-botm">
-            <div class="col-md-12">
-                <h4 class="header-line">User DASHBOARD</h4>
-                
-                            </div>
+$select_book = mysqli_query($conn, "select count(*) from tbl_book where availability=1");
+$total_book = mysqli_fetch_row($select_book);
 
-        </div>
-             
-             <div class="row">
+$issued_book = mysqli_query($conn, "select count(*) from tbl_issue where user_id='$id'  and status=1");
+$issued_book = mysqli_fetch_row($issued_book);
 
 
-<a href="listed-books.php">
-<div class="col-md-4 col-sm-4 col-xs-6">
- <div class="alert alert-success back-widget-set text-center">
- <i class="fa fa-book fa-5x"></i>
-<?php 
-$sql ="SELECT id from tblbooks ";
-$query = $dbh -> prepare($sql);
-$query->execute();
-$results=$query->fetchAll(PDO::FETCH_OBJ);
-$listdbooks=$query->rowCount();
-?>
-<h3><?php echo htmlentities($listdbooks);?></h3>
-Books Listed
-</div></div></a>
-             
-               <div class="col-md-4 col-sm-4 col-xs-6">
-                      <div class="alert alert-warning back-widget-set text-center">
-                            <i class="fa fa-recycle fa-5x"></i>
-<?php 
-$rsts=0;
- $sid=$_SESSION['stdid'];
-$sql2 ="SELECT id from tblissuedbookdetails where StudentID=:sid and (RetrunStatus=:rsts || RetrunStatus is null || RetrunStatus='')";
-$query2 = $dbh -> prepare($sql2);
-$query2->bindParam(':sid',$sid,PDO::PARAM_STR);
-$query2->bindParam(':rsts',$rsts,PDO::PARAM_STR);
-$query2->execute();
-$results2=$query2->fetchAll(PDO::FETCH_OBJ);
-$returnedbooks=$query2->rowCount();
-?>
 
-                            <h3><?php echo htmlentities($returnedbooks);?></h3>
-                          Books Not Returned Yet
-                        </div>
+
+include('include/header.php'); ?>
+
+<div id="wrapper">
+
+  <?php include('include/side-bar.php'); ?>
+
+  <div id="content-wrapper">
+
+    <div class="container-fluid">
+
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Dashboard</a>
+        </li>
+
+      </ol>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <section class="panel panel-featured-left panel-featured-primary">
+            <div class="panel-body total">
+              <div class="widget-summary">
+                <div class="widget-summary-col widget-summary-col-icon">
+                  <div class="summary-icon bg-secondary">
+                    <i class="fa fa-book"></i>
+                  </div>
+                </div>
+                <div class="widget-summary-col">
+                  <div class="summary">
+                    <h4 class="title">Total Books</h4>
+                    <div class="info">
+                      <strong class="amount"><?php echo $total_book[0]; ?></strong><br>
+
                     </div>
+                  </div>
 
-<a href="issued-books.php">
-<div class="col-md-4 col-sm-4 col-xs-6">
- <div class="alert alert-success back-widget-set text-center">
- <i class="fa fa-book fa-5x"></i>
-      <h3>&nbsp;</h3>
-Issued Books
-</div></div></a>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
 
+        <div class="col-sm-4">
+          <section class="panel panel-featured-left panel-featured-primary">
+            <div class="panel-body issued">
+              <div class="widget-summary">
+                <div class="widget-summary-col widget-summary-col-icon">
+                  <div class="summary-icon bg-secondary">
+                    <i class="fa fa-book"></i>
+                  </div>
+                </div>
+                <div class="widget-summary-col">
+                  <div class="summary">
+                    <h4 class="title">Book Issued</h4>
+                    <div class="info">
+                      <strong class="amount"><?php echo $issued_book[0]; ?></strong><br>
 
+                    </div>
+                  </div>
 
-
-
-        </div>    
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
-    </div>
-     <!-- CONTENT-WRAPPER SECTION END-->
-<?php include('includes/footer.php');?>
-      <!-- FOOTER SECTION END-->
-    <!-- JAVASCRIPT FILES PLACED AT THE BOTTOM TO REDUCE THE LOADING TIME  -->
-    <!-- CORE JQUERY  -->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- BOOTSTRAP SCRIPTS  -->
-    <script src="assets/js/bootstrap.js"></script>
-      <!-- CUSTOM SCRIPTS  -->
-    <script src="assets/js/custom.js"></script>
-</body>
-</html>
-<?php } ?>
+  </div>
+</div>
+<a class="scroll-to-top rounded" href="#page-top">
+  <i class="fas fa-angle-up"></i>
+</a>
+<?php include('include/footer.php'); ?>

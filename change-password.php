@@ -1,138 +1,105 @@
 <?php
 session_start();
-include('includes/config.php');
-error_reporting(0);
-if (strlen($_SESSION['login']) == 0) {
-  header('location:index.php');
-} else {
-  if (isset($_POST['change'])) {
-    $password = md5($_POST['password']);
-    $newpassword = md5($_POST['newpassword']);
-    $email = $_SESSION['login'];
-    $sql = "SELECT Password FROM tblstudents WHERE EmailId=:email and Password=:password";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':email', $email, PDO::PARAM_STR);
-    $query->bindParam(':password', $password, PDO::PARAM_STR);
-    $query->execute();
-    $results = $query->fetchAll(PDO::FETCH_OBJ);
-    if ($query->rowCount() > 0) {
-      $con = "update tblstudents set Password=:newpassword where EmailId=:email";
-      $chngpwd1 = $dbh->prepare($con);
-      $chngpwd1->bindParam(':email', $email, PDO::PARAM_STR);
-      $chngpwd1->bindParam(':newpassword', $newpassword, PDO::PARAM_STR);
-      $chngpwd1->execute();
-      $msg = "Your Password succesfully changed";
-    } else {
-      $error = "Your current password is wrong";
+include('connection.php');
+$name = $_SESSION['user_name'];
+$id = $_SESSION['id'];
+if (empty($id)) {
+  header("Location: index.php");
+}
+if (isset($_REQUEST['change-pwd'])) {
+
+  $c_password = md5($_POST['c_password']);
+  $n_password = $_POST['n_password'];
+  $c_n_password = $_POST['c_n_password'];
+
+  $select_query = mysqli_query($conn, "select password from tbl_users where id='$id'");
+  $curr_pass = mysqli_fetch_assoc($select_query);
+  if ($curr_pass['password'] == $c_password) {
+    if ($n_password == $c_n_password) {
+      $new_pwd = md5($n_password);
+      $sql = "update `tbl_users` set password='$new_pwd' where id='$id' and role=2";
+      $result = mysqli_query($conn, $sql);
+      if ($result) {
+       ?>
+        <script type="text/javascript">
+          alert("Your Password updated successfully!")
+        </script>
+      <?php
+      }
+    } else { ?>
+      <script type="text/javascript">
+        alert("New Password and Confirm Password do not match!")
+      </script>
+    <?php
     }
+  } else { ?>
+    <script type="text/javascript">
+      alert("Current Password do not match!")
+    </script>
+<?php
   }
-
+}
 ?>
-  <!DOCTYPE html>
-  <html xmlns="http://www.w3.org/1999/xhtml">
+<?php include('include/header.php'); ?>
+<div id="wrapper">
+  <?php include('include/side-bar.php'); ?>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title> Library Management System | </title>
-    <!-- BOOTSTRAP CORE STYLE  -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet" />
-    <!-- FONT AWESOME STYLE  -->
-    <link href="assets/css/font-awesome.css" rel="stylesheet" />
-    <!-- CUSTOM STYLE  -->
-    <link href="assets/css/style.css" rel="stylesheet" />
-    <!-- GOOGLE FONT -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
-    <style>
-      .errorWrap {
-        padding: 10px;
-        margin: 0 0 20px 0;
-        background: #fff;
-        border-left: 4px solid #dd3d36;
-        -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-      }
+  <div id="content-wrapper">
 
-      .succWrap {
-        padding: 10px;
-        margin: 0 0 20px 0;
-        background: #fff;
-        border-left: 4px solid #5cb85c;
-        -webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-        box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .1);
-      }
-    </style>
-  </head>
-  <script type="text/javascript">
-    function valid() {
-      if (document.chngpwd.newpassword.value != document.chngpwd.confirmpassword.value) {
-        alert("New Password and Confirm Password Field do not match  !!");
-        document.chngpwd.confirmpassword.focus();
-        return false;
-      }
-      return true;
-    }
-  </script>
+    <div class="container-fluid">
 
-  <body>
-    <!------MENU SECTION START-->
-    <?php include('includes/header.php'); ?>
-    <!-- MENU SECTION END-->
-    <div class="content-wrapper">
-      <div class="container">
-        <div class="row pad-botm">
-          <div class="col-md-12">
-            <h4 class="header-line">User Change Password</h4>
-          </div>
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Change Password</a>
+        </li>
+
+      </ol>
+
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-info-circle"></i>
+          Submit Password Details
         </div>
-        <?php if ($error) { ?><div class="errorWrap"><strong>ERROR</strong>:<?php echo htmlentities($error); ?> </div><?php } else if ($msg) { ?><div class="succWrap"><strong>SUCCESS</strong>:<?php echo htmlentities($msg); ?> </div><?php } ?>
-        <!--LOGIN PANEL START-->
-        <div class="row">
-          <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-            <div class="panel panel-info">
-              <div class="panel-heading">
-                Change Password
-              </div>
-              <div class="panel-body">
-                <form role="form" method="post" onSubmit="return valid();" name="chngpwd">
 
-                  <div class="form-group">
-                    <label>Current Password</label>
-                    <input class="form-control" type="password" name="password" autocomplete="off" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label>Enter Password</label>
-                    <input class="form-control" type="password" name="newpassword" autocomplete="off" required />
-                  </div>
-
-                  <div class="form-group">
-                    <label>Confirm Password </label>
-                    <input class="form-control" type="password" name="confirmpassword" autocomplete="off" required />
-                  </div>
-
-                  <button type="submit" name="change" class="btn btn-info">Chnage </button>
-                </form>
+        <form method="post" class="form-valide">
+          <div class="card-body">
+            <div class="form-group row">
+              <label class="col-lg-4 col-form-label" for="pwd">Current Password <span class="text-danger">*</span></label>
+              <div class="col-lg-6">
+                <input type="password" name="c_password" id="c_password" class="form-control" placeholder="Enter Current Password" required>
               </div>
             </div>
+
+            <div class="form-group row">
+              <label class="col-lg-4 col-form-label" for="pwd">New Password <span class="text-danger">*</span></label>
+              <div class="col-lg-6">
+                <input type="password" name="n_password" id="n_password" class="form-control" placeholder="Enter New Password" required>
+              </div>
+            </div>
+
+            <div class="form-group row">
+              <label class="col-lg-4 col-form-label" for="pwd">Confirm New Password <span class="text-danger">*</span></label>
+              <div class="col-lg-6">
+                <input type="password" name="c_n_password" id="c_n_password" class="form-control" placeholder="Confirm New Password" required>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="col-lg-8 ml-auto">
+                <button type="submit" name="change-pwd" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+
           </div>
-        </div>
-        <!---LOGIN PABNEL END-->
-
-
+        </form>
       </div>
-    </div>
-    <!-- CONTENT-WRAPPER SECTION END-->
-    <?php include('includes/footer.php'); ?>
-    <!-- FOOTER SECTION END-->
-    <script src="assets/js/jquery-1.10.2.js"></script>
-    <!-- BOOTSTRAP SCRIPTS  -->
-    <script src="assets/js/bootstrap.js"></script>
-    <!-- CUSTOM SCRIPTS  -->
-    <script src="assets/js/custom.js"></script>
-  </body>
 
-  </html>
-<?php } ?>
+    </div>
+
+  </div>
+
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <?php include('include/footer.php'); ?>
